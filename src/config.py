@@ -3,13 +3,13 @@ from pathlib import Path
 def get_config():
     return {
         "batch_size": 8,
-        "num_epochs": 20,
+        "num_epochs": 10,       # lighter
         "lr": 10**-4,
-        "seq_len": 350,
-        "d_model": 512,
-        "d_ff": 2048,
-        "N": 6,              # Number of layers (Paper used 6)
-        "h": 8,              # Number of heads
+        "seq_len": 150,         # lighter
+        "d_model": 256,         # lighter
+        "d_ff": 512,            # lighter
+        "N": 3,                 # lighter
+        "h": 4,                 # lighter
         "dropout": 0.1,
         "datasource": 'bentrevett/multi30k',
         "lang_src": "en",

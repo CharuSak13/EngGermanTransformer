@@ -8,6 +8,7 @@ from model import build_transformer
 from dataset import causal_mask
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+import os
 
 # Define device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -116,16 +117,29 @@ def run_translation(sentence: str, epoch: int):
     ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
 
     plt.title(f"Plot #10: Cross-Attention Alignment (Epoch {epoch})")
+    
+    # Ensure results folder exists
+    os.makedirs("results", exist_ok=True)
     plt.savefig("results/plot_10_cross_attention.png")
     print("✅ Heatmap saved to results/plot_10_cross_attention.png")
 
 if __name__ == "__main__":
-    # CHANGE THIS NUMBER to the epoch you have finished training (e.g., 0, 1, 19)
+    # epoch to load (usually 0 if you stopped early)
     EPOCH_TO_TEST = 0 
     
-    # Test Sentence
-    sentence = "A dog running in the snow"
-    try:
-        run_translation(sentence, EPOCH_TO_TEST)
-    except FileNotFoundError:
-        print("❌ Error: Model weight file not found. Wait for training to finish at least 1 epoch!")
+    print("\n" + "="*50)
+    print("🤖 INTERACTIVE TRANSLATOR (English -> German)")
+    print("="*50)
+
+    while True:
+        user_sentence = input("\nEnter English Sentence (or 'q' to quit): ")
+        
+        if user_sentence.lower() == 'q':
+            break
+            
+        try:
+            run_translation(user_sentence, EPOCH_TO_TEST)
+        except FileNotFoundError:
+            print("❌ Error: Model weight file not found. Did you train the model?")
+        except Exception as e:
+            print(f"❌ Error: {e}")
