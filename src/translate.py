@@ -11,6 +11,7 @@ import seaborn as sns
 import numpy as np
 import os
 import time
+from datetime import datetime
 
 # Define device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -43,64 +44,31 @@ def greedy_decode(model, source, source_mask, tokenizer_src, tokenizer_tgt, max_
         if next_word == eos_idx: break
     return decoder_input.squeeze(0)
 
-# --- PLOT 1: ENG -> GER (Alignment) ---
+# --- PLOTTING ---
 def plot_cross_attention(model, encoder_input, model_out, tokenizer_src, tokenizer_tgt, safe_name, timestamp):
     attn = model.decoder.layers[-1].cross_attention_block.attention_scores[0].cpu().detach().numpy()
     attn_avg = attn.mean(axis=0)
     
-    # --- FIX: Calculate actual length (ignore padding) ---
     src_ids = encoder_input.squeeze().cpu().numpy()
     src_labels = [tokenizer_src.id_to_token(i) for i in src_ids]
-    
-    # Find where the sentence ends ([EOS] or [PAD])
     try:
         real_len_src = src_labels.index('[PAD]')
     except ValueError:
         real_len_src = len(src_labels)
         
     len_tgt = len(model_out)
-    
-    # Slice valid area only
     visual_matrix = attn_avg[:len_tgt, :real_len_src]
     x_labels = src_labels[:real_len_src]
     y_labels = [tokenizer_tgt.id_to_token(i) for i in model_out.cpu().numpy()]
 
     plt.figure(figsize=(8, 8))
-    # Viridis for clear alignment
     ax = sns.heatmap(visual_matrix, cmap='viridis', square=True, cbar=True,
                      xticklabels=x_labels, yticklabels=y_labels)
-    
-    plt.xticks(rotation=90)
+    plt.xticks(rotation=90) 
     plt.yticks(rotation=0)
-    plt.title("Cross-Attention (Eng -> Ger)")
+    plt.title("Cross-Attention Alignment")
     plt.tight_layout()
     plt.savefig(f"results/{safe_name}_cross_attn_{timestamp}.png")
-    print(f"✅ Saved Eng->Ger Heatmap")
-    plt.close()
-
-# --- PLOT 2: GER -> GER (The Triangle) ---
-def plot_self_attention_triangle(model, model_out, tokenizer_tgt, safe_name, timestamp):
-    attn = model.decoder.layers[0].self_attention_block.attention_scores[0].cpu().detach().numpy()
-    attn_avg = attn.mean(axis=0)
-    
-    len_tgt = len(model_out)
-    visual_matrix = attn_avg[:len_tgt, :len_tgt]
-    mask = np.triu(np.ones_like(visual_matrix, dtype=bool), k=1)
-    
-    labels = [tokenizer_tgt.id_to_token(i) for i in model_out.cpu().numpy()]
-    
-    plt.figure(figsize=(8, 8))
-    # RdBu_r for the Paper look
-    ax = sns.heatmap(visual_matrix, mask=mask, cmap='RdBu_r', square=True, cbar=True, 
-                     linewidths=0.5, linecolor='white',
-                     xticklabels=labels, yticklabels=labels)
-    
-    plt.xticks(rotation=90)
-    plt.yticks(rotation=0)
-    plt.title("Decoder Self-Attention (Causal Triangle)")
-    plt.tight_layout()
-    plt.savefig(f"results/{safe_name}_triangle_attn_{timestamp}.png")
-    print(f"✅ Saved Triangular Heatmap")
     plt.close()
 
 def run_translation(sentence: str, epoch: int):
@@ -128,21 +96,24 @@ def run_translation(sentence: str, epoch: int):
     print(f"\nSOURCE: {source_text}")
     print(f"PREDICTED: {model_out_text}")
     
+    # --- LOGGING TO FILE ---
     os.makedirs("results", exist_ok=True)
+    timestamp_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_entry = f"[{timestamp_str}]\nInput: {source_text}\nOutput: {model_out_text}\n{'-'*30}\n"
+    
+    with open("results/translation_log.txt", "a", encoding="utf-8") as f:
+        f.write(log_entry)
+    print("✅ Saved to results/translation_log.txt")
+    
+    # --- PLOTTING ---
     safe_name = "".join([c if c.isalnum() else "_" for c in sentence])[:15] 
-    timestamp = int(time.time())
-    
-    plot_cross_attention(model, encoder_input, model_out, tokenizer_src, tokenizer_tgt, safe_name, timestamp)
-    
-    tgt_mask = causal_mask(model_out.size(0)).type_as(source_mask).to(device)
-    model.decode(model.encode(encoder_input, source_mask), source_mask, model_out.unsqueeze(0), tgt_mask)
-    plot_self_attention_triangle(model, model_out, tokenizer_tgt, safe_name, timestamp)
+    unix_time = int(time.time())
+    plot_cross_attention(model, encoder_input, model_out, tokenizer_src, tokenizer_tgt, safe_name, unix_time)
 
 if __name__ == "__main__":
     EPOCH_TO_TEST = 19
-    
     print("\n" + "="*50)
-    print("🤖 INTERACTIVE TRANSLATOR (Generates Triangles!)")
+    print("🤖 INTERACTIVE TRANSLATOR (Logs Saved)")
     print("="*50)
 
     while True:

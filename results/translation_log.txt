@@ -1,0 +1,44 @@
+[2026-01-20 18:53:07]
+Input: The cat sits.
+Output: Die Katze sitzt .
+------------------------------
+[2026-01-20 18:53:27]
+Input: Two dogs running.
+Output: Zwei Hunde laufen .
+------------------------------
+[2026-01-20 18:53:39]
+Input: A group of men are running.
+Output: Eine Gruppe von Männern läuft .
+------------------------------
+[2026-01-20 18:58:51]
+Input:  A small white dog.
+Output: Ein kleiner weißer Hund .
+------------------------------
+[2026-01-20 18:59:11]
+Input: A large black car.
+Output: Ein großes schwarzes Auto .
+------------------------------
+[2026-01-20 18:59:46]
+Input: A man stands near the water.
+Output: Ein Mann steht neben dem Wasser .
+------------------------------
+[2026-01-20 18:59:56]
+Input: A woman is walking through the forest.
+Output: Eine Frau geht durch den Wald .
+------------------------------
+[2026-01-20 19:00:12]
+Input: The boy throws a ball.
+Output: Der Junge wirft einen Ball .
+------------------------------
+[2026-01-20 19:00:21]
+Input: Two men are smiling.
+Output: Zwei Männer lächeln .
+------------------------------
+[2026-01-20 19:00:36]
+Input: A young girl in a red shirt is jumping.
+Output: Ein junges Mädchen in einem roten Oberteil springt .
+------------------------------
+[2026-01-20 19:00:53]
+Input: What is the capital of India?
+Output: Das ist das der .
+------------------------------
