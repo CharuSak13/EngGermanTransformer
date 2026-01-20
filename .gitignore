@@ -1,3 +1,21 @@
-venv/
+# --- Python Basics ---
 __pycache__/
+*.py[cod]
+
+# --- Virtual Environment (Huge folder) ---
+venv/
+env/
+
+# --- Model Weights (CRITICAL: Too big for GitHub) ---
 weights/
+*.pt
+*.pth
+*.bin
+
+# --- Data ---
+data/
+.cache/
+
+# --- IDE Settings ---
+.vscode/
+.idea/

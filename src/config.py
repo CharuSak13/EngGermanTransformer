@@ -2,14 +2,14 @@ from pathlib import Path
 
 def get_config():
     return {
-        "batch_size": 8,
-        "num_epochs": 10,       # lighter
+        "batch_size": 8,        # Keep small for RTX 3050 (4GB VRAM)
+        "num_epochs": 20,       # Train fully
         "lr": 10**-4,
-        "seq_len": 150,         # lighter
-        "d_model": 256,         # lighter
-        "d_ff": 512,            # lighter
-        "N": 3,                 # lighter
-        "h": 4,                 # lighter
+        "seq_len": 350,         # Full sentence length
+        "d_model": 512,         # Paper Standard (Big Brain)
+        "d_ff": 2048,           # Paper Standard
+        "N": 6,                 # 6 Layers (Deep Network)
+        "h": 8,                 # 8 Attention Heads
         "dropout": 0.1,
         "datasource": 'bentrevett/multi30k',
         "lang_src": "en",
